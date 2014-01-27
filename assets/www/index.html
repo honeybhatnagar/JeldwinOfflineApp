@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0; user-scalable=no" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+	<title>JeldWen</title>
+    <!-- Styles Starts -->
+    <!-- include jquery mobile -->
+    <link rel="stylesheet" href="jquery/jquery.mobile-1.3.1.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+	<link rel="stylesheet" type="text/css" href="css/layout.css">
+    <!--Alert Box-->
+    <link rel="stylesheet" type="text/css" media="screen,projection" href="css/jquery-fallr-1.3.css">
+    
+    <link rel="stylesheet" href="css/jquery.switchButton.css">
+	
+	<!--Button Js-->
+	<link rel="stylesheet" href="css/jquery.switchButton.css">
+	
+    <!-- Styles end -->
+    
+    <!--  scripts Starts-->
+    
+    <script src="jquery/jquery.tmpl.min.js"></script>
+    <script src="jquery/jquery.url.js"></script>
+    <script src="jquery/jquery-2.0.0.min.js"></script>
+    <script src="jquery/jquery.mobile-1.3.1.min.js"></script>
+        
+    <!-- Include cordova. -->
+	<script src="cordova-2.3.0.js"></script>
+
+    <!-- Include cordova plugins -->
+    <script src="cordova.force.js"></script>
+
+    <!-- include forcetk.mobilesdk for REST transaction support -->
+    <script src="forcetk.mobilesdk.js"></script>
+    
+    <!-- include forcetk.mobilesdk for REST transaction support 
+    <script src="SFSmartStorePlugin.js"></script>
+    
+    <!-- include forcetk.mobilesdk for REST transaction support 
+    <script src="SFHybridApp.js"></script>-->
+
+    <!-- log window styling -->
+    <style>
+      .logWindow {display:none; width:700px;}
+      .logWindow > p {padding:0px; margin:0px; word-wrap:break-word;}
+    </style>
+    
+	<!--Sidebar Js-->
+	<script src="jquery/modernizr.custom.js"></script>
+	<script src="jquery/jquery-migrate-1.0.0.js"></script>
+	
+	
+	
+	
+	<script type="text/javascript" src="jquery/highlight.pack.js"></script>
+	<script type="text/javascript" src="jquery/jquery-fallr-1.3.pack.js"></script>
+	
+    
+	<!-- Custom Classes -->
+    <script src="Jeldwinoffline.js"></script>
+    <script src="Util.js"></script>
+    <script src="OfflineQueue.js"></script>
+       <!-- load our app-specific code -->
+     <script src="Jeldwin.js"></script> 
+    <script>
+
+    
+    // The version of the REST API you wish to use in your app.
+    var apiVersion = "v28.0";
+
+	// If you want to prevent dragging, uncomment this section
+	/*
+	function preventBehavior(e) 
+	{ 
+      e.preventDefault(); 
+    };
+	document.addEventListener("touchmove", preventBehavior, false);
+	*/
+	
+	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+	for more details -jm */
+	/*
+	function handleOpenURL(url)
+	{
+		// do something with the url passed in.
+	}
+	*/
+	
+    var forcetkClient;
+    var debugMode = true;
+    var logToConsole = cordova.require("salesforce/util/logger").logToConsole;
+
+    jQuery(document).ready(function() {
+        //Add event listeners and so forth here
+        logToConsole("onLoad: jquery ready");
+		document.addEventListener("deviceready", onDeviceReady,false);
+
+    });
+
+    // When this function is called, Cordova has been initialized and is ready to roll 
+    function onDeviceReady() {
+        logToConsole("onDeviceReady: Cordova ready");
+		//Call getAuthCredentials to get the initial session credentials
+        cordova.require("salesforce/plugin/oauth").getAuthCredentials(salesforceSessionRefreshed, getAuthCredentialsError);
+
+        //register to receive notifications when autoRefreshOnForeground refreshes the sfdc session
+        document.addEventListener("salesforceSessionRefresh",salesforceSessionRefreshed,false);
+
+        //enable buttons
+        init();
+       
+        
+        //
+    }
+        
+
+    function salesforceSessionRefreshed(creds) {
+        logToConsole("salesforceSessionRefreshed");
+        
+        // Depending on how we come into this method, `creds` may be callback data from the auth
+        // plugin, or an event fired from the plugin.  The data is different between the two.
+        var credsData = creds;
+        if (creds.data)  // Event sets the `data` object with the auth data.
+            credsData = creds.data;
+
+        forcetkClient = new forcetk.Client(credsData.clientId, credsData.loginUrl, null,
+            cordova.require("salesforce/plugin/oauth").forcetkRefresh);
+        forcetkClient.setSessionToken(credsData.accessToken, apiVersion, credsData.instanceUrl);
+        forcetkClient.setRefreshToken(credsData.refreshToken);
+        forcetkClient.setUserAgentString(credsData.userAgent);
+    }
+
+    function getAuthCredentialsError(error) {
+        logToConsole("getAuthCredentialsError: " + error);
+    }
+        
+    </script>
+     
+	  
+	
+
+	<script type="text/javascript">  
+	(function(){if(!/*@cc_on!@*/0)return;var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,hgroup,mark,menu,meter,nav,output,progress,section,time,video".split(','),i=e.length;while(i--){document.createElement(e[i])}})()</script>
+	<!--[if lt IE 9]>
+	  <script src="js/html5.js"></script>
+	  <![endif]-->
+	
+	
+	
+	<!--Tab JS-->
+	<link rel="stylesheet" href="jquery/jquery.mobile-1.3.1.min.css" />
+    <script src="jquery/jquery-2.0.0.min.js"></script>
+    <script src="jquery/jquery.mobile-1.3.1.min.js"></script>
+	
+	<script src="jquery/jquery-ui.js"></script>
+	<script>
+	$(function() {
+	$( "#tabs1" ).tabs();
+	$( "#tabs2" ).tabs();
+	$( "#tabs3" ).tabs();
+	$( "#tabs4" ).tabs();
+	$( "#tabs5" ).tabs();
+	$( "#tabs6" ).tabs();
+	});
+	</script>
+
+	<script type="text/javascript">
+	//<![CDATA[
+	$(document).ready(function(){
+	var methods = {
+	middle : function(){
+		console.log('test');
+	var clicked = function(){
+	    // alert('congrats, you\'ve deleted internet');
+	    $.fallr('hide');
+	};
+	$.fallr('show', {
+	    buttons : {
+	        button2 : {text: 'Cancel'}, 
+	        button1 : {text: 'Yes', danger:true, onclick: clicked}
+	    },
+	    content : '<p>Are you sure that you want <br/>to check into <br/>Lowe’s Store #0000?</p>',
+	    icon    : 'error'
+	});
+	},
+	};
+	//button trigger
+	$('a[href^="#fallr-"]').click(function(){
+	var id = $(this).attr('href').substring(7);
+	methods[id].apply(this,[this]);
+	return false;
+	});
+	// code expander
+	$('#features pre').slideUp();
+	$('a[href="#"]').click(function(){var index = ($(this).parent('p').index()-2)/3;console.log(index);$(this).parent('p').siblings('pre').eq(index).slideToggle();return false;});
+	// syntax highlighter
+	hljs.tabReplace = '    ';
+	hljs.initHighlightingOnLoad();
+	});
+	//]]>
+	</script>
+<!--  scripts end-->    
+</head>
+  <body class="cbp-spmenu-push bgBlue ui-mobile-viewport ui-overlay-c cbp-spmenu-push-toright">
+<div class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left cbp-spmenu-open" id="cbp-spmenu-s1">
+  <h3>Joe Representative</h3>
+  <a href="jquery/index.html#searchR" data-transition="slide" title="Global Search"><img src="images/navIcon1.png" alt="Global Search"><span>Global Search</span></a>
+  <a href="#" id="link_fetch_contacts" data-transition="slide" title="Contacts"><img src="images/navIcon2.png" alt="Contacts"><span>Contacts</span></a> 
+  <a href="jquery/index.html#accntPg" data-transition="slide" title="Accounts"><img src="images/navIcon3.png" alt="Accounts"><span>Accounts</span></a> 
+  <a href="jquery/index.html#activitiesPg" data-transition="slide" title="Activities"><img src="images/navIcon4.png" alt="Activities"><span>Activities</span></a> 
+  <a href="jquery/index.html#casePg" data-transition="slide" title="Cases"><img src="images/navIcon5.png" alt="Cases"><span>Cases</span></a>
+   <a href="jquery/index.html#compShopPg" data-transition="slide" title="Comp Shop"><img src="images/navIcon6.png" alt="Comp Shop"><span>Comp Shop</span></a> 
+   <a href="jquery/index.html#dashBPg" data-transition="slide" title="Dashboard"><img src="images/navIcon7.png" alt="Dashboard"><span>Dashboard</span></a> 
+   <a href="#" data-transition="slide" title="Log Out" id="link_logout"><img src="images/navIcon8.png" alt="Log Out"><span>Log Out</span></a>
+</div>
+  
+<div class="loadingDiv" id="loadingDiv">
+    <img src="images/loader.GIF">
+</div>
+
+
+
+<header class="headerNav">
+  <div><a href="javascript:void(0);" id="showLeftPush" class=""><img src="images/navIcon.png" alt="Navigation"></a></div>
+</header>
+
+<!--Splash Screen Start-->
+<div id="splashLogo" data-role="page" data-url="splashLogo" tabindex="0" class="ui-page ui-body-c" style="">
+  <section class="logo"> <img src="images/logo.png" alt="Logo"> </section>
+</div>
+
+<!--Splash Screen End--> 
+
+<!--Login Screen Start-->
+<div id="LoginPg" data-role="page" style="display: none;" data-url="LoginPg">
+  <section class="loginPage">
+    <h3>SFDC Login</h3>
+    <div class="loginPageForm">
+      <input type="text" value="" placeholder="Username">
+      <input type="password" value="" placeholder="Password">
+      <input type="submit" value="Login" name="Login">
+    </div>
+  </section>
+</div>
+
+<!--Login Screen End--> 
+
+
+<!--Logout Screen Start-->
+<div id="LogoutPg" data-role="page" data-url="LogoutPg">
+  <section class="loginPage">
+    <h3>SFDC Login</h3>
+    <div class="loginPageForm">
+      <input type="text" value="" placeholder="Username">
+      <input type="password" value="" placeholder="Password">
+      <input type="submit" value="Login" name="Login">
+    </div>
+  </section>
+</div>
+
+<!--Login Screen End--> 
+
+<!--Global Search Page Start-->
+<div id="searchR" data-role="page" data-url="searchR">
+  <section class="middle bgBlue">
+    <div class="middBox">
+      <div class="search">
+        <input type="text" value="" name="" placeholder="Keyword, Store#, Contact Name">
+        <a href="javascript:void(0);">Cancel</a> </div>
+    </div>
+  </section>
+  <section class="midNav bgGray" style="display:none;">
+    <div class="storeNo">
+      <p class="floatLft">Accounts Results</p>
+    </div>
+    <ul class="whiteNav">
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+    </ul>
+    <div class="storeNo">
+      <p class="floatLft">Contacts Results</p>
+    </div>
+    <ul class="whiteNav">
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#searchR--> 
+<!--Global Search Page End--> 
+
+<!--Contact Page Main Start--> 
+
+<!--Contact Page 1 Start-->
+<div id="contPg" data-role="page" data-url="contPg" tabindex="0" class="ui-page ui-body-c ui-page-active" style="min-height: 571px;">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn ui-link">Check Out</a></div>
+  </div>
+  <section class="middle bgBlue">
+    <div class="middBox">
+      <h3>Contacts <span>
+      <a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt aBtnContactGry ui-link">
+      <img src="images/iconSearch.png" alt="Add to Contact"></a> 
+      <a id="newbtnContact" data-transition="slide" title="Check Out" class="aBtnContact floatRt aBtnContactGry ui-link">
+      <img src="images/iconAddtoCont2.png" alt="Add to Contact"></a></span>
+      </h3>
+    </div>
+  </section>
+  <section class="midNav bgGray">
+    
+    <ul class="whiteNav" id="ContactList">
+    
+    </ul>
+  </section>
+</div>
+<!--#contPg--> 
+<!--Contact Page 1 End-->
+
+
+<!--Add Contact Page 1 Start-->
+<div id="addContact" data-role="page" data-url="addContact">
+  
+   <nav>
+   		<a href="jquery/Title.html" data-transition="slide" data-direction="reverse" title="Contacts"><img src="images/arrow.png" alt="Contacts"><p>Add Contact</p></a>    </nav>
+
+  <section class="middle">
+    <div class="middBox">
+      <form name="contact" id="form">
+      <input type="hidden" name="Id" id="Id">
+      <p class="width100"><input type="text" class="floatRt width100" placeholder="First Name:" id="FirstName" name="FirstName" required=""></p>
+      <div class="clearBoth"></div>
+      <p class="width100"><input type="text" class="floatRt width100" placeholder="Last Name:" id="LastName" name="LastName" required=""></p>
+      <div class="clearBoth"></div>
+      <p class="width100"><input type="text" class="floatRt width100" placeholder="Email:" id="Email" name="Email" required="" title="example@example.com" pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}"></p>
+      <div class="clearBoth"></div>
+      <p><input type="submit" value="Create" id="actionbtnContact"></p>
+      </form>
+    </div>
+  </section>
+</div>
+<!--#contPg--> 
+<!--Contact Page 1 End-->
+ 
+
+<!--Contact Page 2 Start-->
+<div id="contPg2" data-role="page" data-url="contPg2">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn">Check Out</a></div>
+  </div>
+  <nav> <a href="jquery/Title.html" data-transition="slide" data-direction="reverse" title="Contacts"><img src="images/arrow.png" alt="Contacts">
+    <p>Contacts</p>
+    </a> </nav>
+  <section class="middle" id="customContactDetails">
+
+  </section>
+  <section class="midNav">
+    <ul>
+      <li><a href="jquery/index.html#contPg3" title="Activity" data-transition="slide">Activity</a></li>
+      <li><a href="jquery/index.html#contPg4" title="Notes" data-transition="slide">Notes</a></li>
+      <li><a href="jquery/index.html#contPg5" data-transition="slide" title="Lead Referrals">Lead Referrals</a></li>
+    </ul>
+  </section>
+</div>
+<!--#contPg2--> 
+<!--Contact Page 2 End--> 
+
+<!--Contact Page 3 Start-->
+<div id="contPg3" data-role="page" data-url="contPg3"><!--#contPg3-->
+  <nav> <a href="jquery/index.html#contPg2" data-transition="slide" data-direction="reverse" title="David Ellefson"><img src="images/arrow.png" alt="Accounts">
+    <p>David Ellefson</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Activities<span><a href="javascript:void(0);" class="aBtnContact floatRt"><img src="images/iconAddtoCont.png" alt="Add to Contact"></a></span></h3>
+    </div>
+  </section>
+  <section class="midNav ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs3">
+    <div class="middListNav">
+      <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist">
+        <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active" role="tab" tabindex="0" aria-controls="tabs-1" aria-labelledby="ui-id-7" aria-selected="true"><a href="jquery/index.html#tabs-1" title="Today" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-7">Today</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-2" aria-labelledby="ui-id-8" aria-selected="false"><a href="jquery/index.html#tabs-2" title="This Week" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-8">This Week</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-3" aria-labelledby="ui-id-9" aria-selected="false"><a href="jquery/index.html#tabs-3" title="Overdue" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-9">Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-1" aria-labelledby="ui-id-7" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="true" aria-hidden="false">
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-2" aria-labelledby="ui-id-8" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-3" aria-labelledby="ui-id-9" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#contPg3--> 
+<!--Contact Page 3 End--> 
+
+<!--Contact Page 4 Start-->
+<div id="contPg4" data-role="page" data-url="contPg4"><!--#contPg4-->
+  <nav>  <a="" href="jquery/index.html#contPg2" data-transition="slide" data-direction="reverse" title="David Ellefson"><img src="images/arrow.png" alt="David Ellefson">
+    <p>David Ellefson</p>
+    </a> </nav>
+  <section class="noteBox">
+    <div class="noteBoxMain noteBoxMain2">
+      <h6>Notes: <a class="floatRt" href="javascript:void(0);"><img alt="Edit" src="images/iconEdit.png"></a></h6>
+    </div>
+  </section>
+  <section class="actyDetail">
+    <div class="actyDetailCnt">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</div>
+  </section>
+</div>
+<!--#contPg4--> 
+<!--Contact Page 4 End--> 
+
+<!--Contact Page 5 Start-->
+<div id="contPg5" data-role="page" data-url="contPg5"><!--#contPg5-->
+  <nav> <a href="jquery/index.html#contPg2" data-transition="slide" data-direction="reverse" title="David Ellefson"><img src="images/arrow.png" alt="Accounts">
+    <p>David Ellefson</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Lead Referrals</h3>
+    </div>
+  </section>
+  <section class="leadNav">
+    <ul>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+    </ul>
+  </section>
+</div>
+<!--#contPg5--> 
+<!--Contact Page 5 End--> 
+
+<!--Contact Page Main End--> 
+
+<!--Accounts Page Main Start--> 
+<!--Accounts Page 1 Start-->
+<div id="accntPg" data-role="page" data-url="accntPg">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a class="aBtn" title="Check Out" href="javascript:void(0);">Check Out</a></div>
+  </div>
+  <section class="middle bgBlue">
+    <div class="middBox">
+      <h3>Accounts <span><a class="aBtnContact floatRt aBtnContactGry" title="Check Out" href="javascript:void(0);"><img alt="Add to Contact" src="images/iconSearch.png"></a> <a class="aBtnContact floatRt aBtnContactGry" title="Check Out" href="javascript:void(0);"><img alt="Add to Contact" src="images/iconAddtoCont2.png"></a></span></h3>
+    </div>
+  </section>
+  <section class="midNav bgGray">
+    <div class="storeNo">
+      <p class="floatLft">Lowe’s</p>
+      <div class="customInput floatRt">
+        <div class="styled">
+          <select>
+            <option>Store Number</option>
+            <option>City</option>
+            <option>State</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <ul class="whiteNav">
+      <li><a data-transition="slide" href="jquery/index.html#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="jquery/index.html#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="jquery/index.html#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="jquery/index.html#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="jquery/index.html#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="jquery/index.html#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+    </ul>
+  </section>
+</div>
+<!--#accntPg--> 
+<!--Accounts Page 1 End--> 
+
+<!--Accounts Page 2 Start-->
+<div id="accntPg2" data-role="page" data-url="accntPg2">
+  <nav> <a title="Accounts" href="jquery/index.html#accntPg" data-transition="slide" data-direction="reverse"><img alt="Accounts" src="images/arrow.png">
+    <p>Lowe’s Store #2372</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Accounts<span><a class="aBtnContact floatRt" title="Check Out" href="javascript:void(0);"><img alt="Add to Contact" src="images/iconAddtoCont.png"></a></span></h3>
+    </div>
+  </section>
+  <section id="tabs4" class="midNav ui-tabs ui-widget ui-widget-content ui-corner-all">
+    <div class="middListNav">
+      <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist">
+        <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active" role="tab" tabindex="0" aria-controls="tabs-4" aria-labelledby="ui-id-10" aria-selected="true"><a href="jquery/index.html#tabs-4" title="Today" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-10">Today</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-5" aria-labelledby="ui-id-11" aria-selected="false"><a href="jquery/index.html#tabs-5" title="This Week" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-11">This Week</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-6" aria-labelledby="ui-id-12" aria-selected="false"><a href="jquery/index.html#tabs-6" title="Overdue" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-12">Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-4" aria-labelledby="ui-id-10" class="ui-tabs-panel ui-widget-content ui-corner-bottom" 
+    role="tabpanel" aria-expanded="true" aria-hidden="false">
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-5" aria-labelledby="ui-id-11" class="ui-tabs-panel ui-widget-content ui-corner-bottom" 
+    role="tabpanel" aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-6" aria-labelledby="ui-id-12" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" 
+    aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--accntPg2--> 
+<!--Accounts Page 2 End--> 
+<!--Accounts Page Main End--> 
+
+<!--Activities Page Main Start--> 
+<!--Activities Page 1 Start-->
+<div id="activitiesPg" data-role="page" data-url="activitiesPg">
+  <nav> <a title="Accounts" href="javascript:void(0);"><img alt="Accounts" src="jquery/arrow.png">
+    <p>Lowe’s Store #2372</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Activities<span><a class="aBtnContact floatRt" title="Add" href="jquery/index.html#activitiesPgEd1" data-transition="slide"><img alt="Add to Contact" src="images/iconAddtoCont.png"></a></span></h3>
+    </div>
+  </section>
+  <section id="tabs5" class="midNav ui-tabs ui-widget ui-widget-content ui-corner-all">
+    <div class="middListNav">
+      <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist">
+        <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active" role="tab" tabindex="0" aria-controls="tabs-7" aria-labelledby="ui-id-13" aria-selected="true"><a href="jquery/index.html#tabs-7" title="Today" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-13">Today</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-8" aria-labelledby="ui-id-14" aria-selected="false"><a href="jquery/index.html#tabs-8" title="This Week" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-14">This Week</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-9" aria-labelledby="ui-id-15" aria-selected="false"><a href="jquery/index.html#tabs-9" title="Overdue" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-15">Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-7" aria-labelledby="ui-id-13" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="true" aria-hidden="false">
+      <li><a title="Activity" data-transition="slide" href="jquery/index.html#activitiesPg2" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-8" aria-labelledby="ui-id-14" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" 
+    aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-9" aria-labelledby="ui-id-15" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#accntPg--> 
+<!--Activities Page 1 End--> 
+
+<!--Activities Page 2 Start-->
+<div id="activitiesPg2" data-role="page" data-url="activitiesPg2">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a class="aBtn" title="Check Out" href="javascript:void(0);">Check Out</a></div>
+  </div>
+  <nav> <a title="Dashboard" href="jquery/index.html#activitiesPg" data-transition="slide" data-direction="reverse"><img alt="Dashboard" src="jquery/arrow.png">
+    <p>Dashboard</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Activity Name<a class="floatRt" title="Edit" href="javascript:void(0)"><img alt="Edit" src="images/iconEdit.png"></a></h3>
+      <div class="iconAdd"> <img alt="Date" src="images/iconDate.png">
+        <p>MM/DD/YYYY<br>
+          12:00PM</p>
+      </div>
+      <div class="iconAdd"> <img alt="Address" src="images/iconAddress.png">
+        <p>1500 Broadway<br>
+          Saugus, MA 01906</p>
+      </div>
+      <div class="iconCall"> <img alt="Call" src="images/iconCall.png">
+        <p>(781) 417-1027</p>
+      </div>
+      <div class="iconCall"> <img alt="User" src="images/iconUser.png">
+        <p>David Ellefson</p>
+      </div>
+    </div>
+  </section>
+  <section class="actyDetail">
+    <div class="btnOnOff">
+      <p>Include In Trip Report</p>
+      <div id="basic" class="demo floatRt">
+        <input type="checkbox" value="1" checked="" style="display: none;"><span class="switch-button-label off" style="display: inline;">OFF</span><div class="switch-button-background" style="width: 40px; height: 20px;"><div class="switch-button-button" style="width: 20px; height: 20px; left: 19px;"></div></div><span class="switch-button-label on" style="display: inline;">ON</span><div style="clear: left;"></div>
+      </div>
+    </div>
+    <div class="actyDetailCnt">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</div>
+  </section>
+</div>
+<!--accntPg2--> 
+<!--Activities Page 2 End--> 
+
+<!--Activities PageEdit 1 start-->
+<div id="activitiesPgEd1" data-role="page" data-url="activitiesPgEd1">
+  <nav> <a href="jquery/index.html#activitiesPg" data-transition="slide" title="Create Activity">
+    <p>Comp Shop Name</p>
+    </a> <a title="Accounts" href="javascript:void(0);" class="floatRt">
+    <p id="cancelBtn">Cancel</p>
+    </a> </nav>
+  <section class="noteBox">
+    <input type="text" placeholder="Activity Name" name="" value="">
+    <div class="noteBoxList">
+      <ul>
+        <li><a href="javascript:void(0);"><span>MM/DD/YYYY</span><img alt="Icon" src="images/iconList1.png"></a></li>
+        <li><a href="javascript:void(0);"><span>12:00pm ,EST</span><img alt="Icon" src="images/iconList2.png"></a></li>
+        <li><a href="javascript:void(0);"><span>Select Store</span><img alt="Icon" src="images/iconList3.png"></a></li>
+        <li><a href="javascript:void(0);"><span>Activity Type</span><img alt="Icon" src="images/iconList3.png"></a></li>
+        <li><a href="javascript:void(0);"><span>Select Category</span><img alt="Icon" src="images/iconList3.png"></a></li>
+        <li><a href="javascript:void(0);"><span>Issue Type</span><img alt="Icon" src="images/iconList3.png"></a></li>
+      </ul>
+    </div>
+  </section>
+  <section class="noteBox">
+    <div class="noteBoxList">
+      <ul>
+        <li><a href="javascript:void(0);"><span>Select Category</span><img src="images/iconList3.png" alt="Icon"></a></li>
+        <li><a href="javascript:void(0);"><span>Issue Type</span><img src="images/iconList3.png" alt="Icon"></a></li>
+        <li>
+          <div class="notBoxheader">
+            <p class="tI">Priority</p>
+            <div class="demo floatRt" id="basic">
+              <input type="checkbox" value="1" checked="" style="display: none;"><span class="switch-button-label off" style="display: inline;">OFF</span><div class="switch-button-background" style="width: 40px; height: 20px;"><div class="switch-button-button" style="width: 20px; height: 20px; left: 19px;"></div></div><span class="switch-button-label on" style="display: inline;">ON</span><div style="clear: left;"></div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="notBoxheader">
+            <p class="tI">Include in Trip Report</p>
+            <div class="demo floatRt" id="basic">
+              <input type="checkbox" value="1" checked="" style="display: none;"><span class="switch-button-label off" style="display: inline;">OFF</span><div class="switch-button-background" style="width: 40px; height: 20px;"><div class="switch-button-button" style="width: 20px; height: 20px; left: 19px;"></div></div><span class="switch-button-label on" style="display: inline;">ON</span><div style="clear: left;"></div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="noteBoxMain">
+      <h6>Notes: <a href="javascript:void(0);" class="floatRt"><img src="images/iconEdit.png" alt="Edit"></a></h6>
+      <textarea placeholder="Notes, notes, notes..."></textarea>
+      <div class="noteBoxMainFtr"> <a href="javascript:void(0);" class="floatLft"><img src="images/iconDummy.png" alt="Icon"></a> <a href="javascript:void(0);" class="floatRt"><img src="images/iconCam.png" alt="Icon"></a> </div>
+    </div>
+    <div class="noteBoxMain">
+      <h6>Next Steps:<a class="floatRt" href="javascript:void(0);"><img alt="Edit" src="images/iconEdit.png"></a></h6>
+      <textarea placeholder="Follow up..."></textarea>
+    </div>
+    <div class="notBoxFooter">
+      <div class="notBoxFooterLft">
+        <p>Send<br>
+          Email</p>
+        <div class="demo notBoxFooterLftBtn" id="basic">
+          <input type="checkbox" value="1" checked="" style="display: none;"><span class="switch-button-label off" style="display: inline;">OFF</span><div class="switch-button-background" style="width: 40px; height: 20px;"><div class="switch-button-button" style="width: 20px; height: 20px; left: 19px;"></div></div><span class="switch-button-label on" style="display: inline;">ON</span><div style="clear: left;"></div>
+        </div>
+      </div>
+      <div class="notBoxFooterRt"> <a href="javascript:void(0);">Save</a> </div>
+    </div>
+  </section>
+</div>
+<!--#activitiesPgEd1--> 
+<!--Activities PageEdit 1 End--> 
+
+<!--Case Page Main End--> 
+
+<!--Case Page Main Start--> 
+<!--Case Page 1 Start-->
+<div id="casePg" data-role="page" data-url="casePg">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a class="aBtn" title="Check Out" href="javascript:void(0);">Check Out</a></div>
+  </div>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Cases</h3>
+    </div>
+  </section>
+  <section class="midNav">
+    <ul>
+      <li><a title="Notes" href="jquery/index.html#casePg2" data-transition="slide">#0000000000000<br>
+        <span>Account Name<br>
+        Owner Name</span></a></li>
+      <li><a title="Notes" href="jquery/index.html#casePg2" data-transition="slide">#0000000000000<br>
+        <span>Account Name<br>
+        Owner Name</span></a></li>
+      <li><a title="Notes" href="jquery/index.html#casePg2" data-transition="slide">#0000000000000<br>
+        <span>Account Name<br>
+        Owner Name</span></a></li>
+      <li><a title="Notes" href="jquery/index.html#casePg2" data-transition="slide">#0000000000000<br>
+        <span>Account Name<br>
+        Owner Name</span></a></li>
+    </ul>
+  </section>
+</div>
+<!--#accntPg--> 
+<!--Accounts Page 1 End--> 
+
+<!--Accounts Page 2 Start-->
+<div id="casePg2" data-role="page" data-url="casePg2">
+  <nav> <a title="Cases" href="jquery/index.html#casePg" data-transition="slide" data-direction="reverse"><img alt="Cases" src="jquery/arrow.png">
+    <p>Cases</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>#000000000</h3>
+      <p class="width100 fontSize18"><b>Account:</b> Lowe's Store</p>
+      <br>
+      <p class="width100 fontSize18"><b>Contact:</b> Jhon Smith</p>
+      <br>
+      <p class="width100 fontSize18"><b>Subject:</b> Damaged</p>
+      <br>
+      <p class="width100 fontSize18"><b>Created:</b> MM/DD/YYYY</p>
+      <br>
+      <p class="width100 fontSize18"><b>Closed:</b> MM/DD/YYYY</p>
+      <br>
+      <p class="width100 fontSize18"><b>Status:</b> On Hold</p>
+      <br>
+      <p class="width100 fontSize18"><b>Priority:</b> Medium</p>
+    </div>
+  </section>
+  <section class="midNav bgBlue">
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing();" id="showNav">Product Category Name <img class="floatRt" alt="Arrow" src="jquery/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl">
+      <section class="middle">
+        <div class="middBox">
+          <p class="width100 fontSize18"><b>Warranty Case Owner:</b></p>
+          <br>
+          <p class="width100 fontSize18"><b>Warranty Source:</b></p>
+          <br>
+          <p class="width100 fontSize18"><b>Case Owner:</b></p>
+          <br>
+          <p class="width100 fontSize18"><b>Business Name:</b></p>
+          <br>
+          <p class="width100 fontSize18"><b>Bulider Name:</b></p>
+          <br>
+        </div>
+      </section>
+    </div>
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing2();" id="showNav">Description<img class="floatRt" alt="Arrow" src="jquery/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl2">
+      <section class="middle">
+        <div class="middBox">
+          <p class="fontSize16">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+        </div>
+      </section>
+    </div>
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing3();" id="showNav">Additional Info<img class="floatRt" alt="Arrow" src="jquery/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl3">
+      <section class="middle">
+        <div class="middBox">
+          <p class="fontSize16">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+        </div>
+      </section>
+    </div>
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing4();" id="showNav">Warranty Tasks<img class="floatRt" alt="Arrow" src="jquery/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl4">
+      <section class="middle">
+        <div class="middBox">
+          <p class="fontSize16">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+        </div>
+      </section>
+    </div>
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing5();" id="showNav">Warranty Products<img class="floatRt" alt="Arrow" src="jquery/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl5">
+      <section class="middle">
+        <div class="middBox">
+          <p class="fontSize16">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+        </div>
+      </section>
+    </div>
+  </section>
+</div>
+<!--casePg2--> 
+<!--Case  Page 2 End--> 
+<!--Case Page Main End--> 
+
+<!--Comp Shop Page Start-->
+<div id="compShopPg" data-role="page" data-url="compShopPg">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn">Check Out</a></div>
+  </div>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Comp Shops<span><a class="aBtnContact floatRt" title="Check Out" href="javascript:void(0);"><img alt="Add to Contact" src="images/iconAddtoCont.png"></a></span></h3>
+    </div>
+  </section>
+  <section class="midNav ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs6">
+    <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist">
+      <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active" role="tab" tabindex="0" aria-controls="compShopPg2" aria-labelledby="ui-id-16" aria-selected="true"><a href="jquery/index.html#compShopPg2" data-transition="slide" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-16">Comp Shop Name<br>
+        <span>Comp Shop Description</span>
+        <p class="floatRt">00/00/0000</p>
+        </a></li>
+      <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="compShopPg2" aria-labelledby="ui-id-17" aria-selected="false"><a href="jquery/index.html#compShopPg2" data-transition="slide" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-17">Comp Shop Name<br>
+        <span>Comp Shop Description</span>
+        <p class="floatRt">00/00/0000</p>
+        </a></li>
+      <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="compShopPg2" aria-labelledby="ui-id-18" aria-selected="false"><a href="jquery/index.html#compShopPg2" data-transition="slide" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-18">Comp Shop Name<br>
+        <span>Comp Shop Description</span>
+        <p class="floatRt">00/00/0000</p>
+        </a></li>
+      <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="compShopPg2" aria-labelledby="ui-id-19" aria-selected="false"><a href="jquery/index.html#compShopPg2" data-transition="slide" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-19">Comp Shop Name<br>
+        <span>Comp Shop Description</span>
+        <p class="floatRt">00/00/0000</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#compShopPg--> 
+
+<!--Comp Shop Page 2 Start-->
+<div id="compShopPg2" data-role="page" data-url="compShopPg2">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a class="aBtn" title="Check Out" href="javascript:void(0);">Check Out</a></div>
+  </div>
+  <nav> <a title="Comp Shops" href="jquery/index.html#compShopPg" data-transition="slide" data-direction="reverse"><img alt="Comp Shops" src="jquery/arrow.png">
+    <p>Comp Shops</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Comp Shop Name</h3>
+      <p>Market/Location</p>
+      <div class="clearBoth"></div>
+      <p>Owner Name</p>
+      <div class="clearBoth"></div>
+      <br>
+      <p>Completed
+      </p><div class="demo notBoxFooterLftBtn floatLft noMargin" id="basic">
+        <input type="checkbox" value="1" checked="" style="display: none;"><span class="switch-button-label off" style="display: inline;">OFF</span><div class="switch-button-background" style="width: 40px; height: 20px;"><div class="switch-button-button" style="width: 20px; height: 20px; left: 19px;"></div></div><span class="switch-button-label on" style="display: inline;">ON</span><div style="clear: left;"></div>
+      </div>
+      <p></p>
+    </div>
+  </section>
+  <section class="midNav">
+    <ul>
+      <li><a title="Retailers / Products" href="jquery/index.html#compShopPg3" data-transition="slide">Retailers / Products</a></li>
+    </ul>
+  </section>
+</div>
+<!--#compShopPg2--> 
+<!--Comp Shop Page 2 Start--> 
+
+<!--Comp Shop Page 3 Start-->
+<div id="compShopPg3" data-role="page" data-url="compShopPg3">
+  <nav> <a href="jquery/index.html#compShopPg2" data-transition="slide" data-direction="reverse" title="Comp Shop Name"><img src="images/arrow.png" alt="Comp Shop Name">
+    <p>Comp Shop Name</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3><a onclick="listingCS();" id="showNav"><img src="images/thehome.png" alt="The Home Depot"> The Home Depot<img src="images/arrowDwn.png" alt="Arrow" class="floatRt imgMar"></a></h3>
+    </div>
+    <div class="onclkList" id="listUlCS">
+      <ul>
+        <li><a href="javascript:void(0);"><img src="images/listIcon1.png" alt="Icon">Lowe’s</a></li>
+        <li><a href="javascript:void(0);"><img src="images/listIcon2.png" alt="Icon">Menards</a></li>
+      </ul>
+    </div>
+  </section>
+  <section class="middle">
+    <div class="middBox">
+      <div class="clearBoth"></div>
+      <br>
+      <p>Section Completed
+      
+      </p><div class="demo notBoxFooterLftBtn floatLft noMargin" id="basic">
+        <input type="checkbox" value="1" checked="" style="display: none;"><span class="switch-button-label off" style="display: inline;">OFF</span><div class="switch-button-background" style="width: 40px; height: 20px;"><div class="switch-button-button" style="width: 20px; height: 20px; left: 19px;"></div></div><span class="switch-button-label on" style="display: inline;">ON</span><div style="clear: left;"></div>
+      </div>
+      <p></p>
+    </div>
+  </section>
+  <section class="midNav bgBlue">
+    <div class="storeNo">
+      <p class="floatLft colrWht width100">Product Category Name <img src="images/arrowDwn2.png" alt="Arrow" class="floatRt"></p>
+    </div>
+    <ul class="whiteNav editList">
+      <li><a title="Edit" href="jquery/index.html#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen"></span></a></li>
+      <li><a title="Edit" href="jquery/index.html#compShopPg4" data-transition="slide">&gt;
+        <p>#0000 Product <br>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen"></span></a></li>
+      <li><a title="Edit" href="jquery/index.html#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen"></span></a></li>
+      <li><a title="Edit" href="jquery/index.html#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen"></span></a></li>
+      <li><a title="Edit" href="jquery/index.html#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen"></span></a></li>
+      <li><a title="Edit" href="jquery/index.html#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen"></span></a></li>
+    </ul>
+  </section>
+</div>
+<!--#compShopPg3--> 
+<!--Comp Shop Page 3 Start--> 
+
+<!--Comp Shop Page 4 Start-->
+<div id="compShopPg4" data-role="page" data-url="compShopPg4">
+  <nav> <a href="jquery/index.html#compShopPg3" data-transition="slide" data-direction="reverse" title="Comp Shop Retailer"><img src="images/arrow.png" alt="Comp Shop Name">
+    <p>Comp Shop Retailer</p>
+    </a> </nav>
+  <section class="midNav bgBlue">
+    <div class="storeNo">
+      <p class="floatLft colrWht width100">Retailer Name</p>
+      <p class="floatLft colrWht width100">Product Description</p>
+    </div>
+  </section>
+  <section class="middle">
+    <div class="middBox">
+      <p class="width100">Price
+        <input type="text" class="floatRt width50" placeholder="$0.000.00">
+      </p>
+      <div class="clearBoth"></div>
+      <p class="width100">SKU#
+        <input type="text" class="floatRt width50" placeholder="123456789">
+      </p>
+      <div class="clearBoth"></div>
+      <p>Jamb
+      </p><div id="basic" class="demo notBoxFooterLftBtn floatLft noMargin">
+        <input type="checkbox" value="1" checked="" style="display: none;"><span class="switch-button-label off" style="display: inline;">OFF</span><div class="switch-button-background" style="width: 40px; height: 20px;"><div class="switch-button-button" style="width: 20px; height: 20px; left: 19px;"></div></div><span class="switch-button-label on" style="display: inline;">ON</span><div style="clear: left;"></div>
+      </div>
+      <p></p>
+    </div>
+  </section>
+  <section class="middle">
+    <div class="middBox">
+      <p class="width100">Comments</p>
+    </div>
+    <input type="text" class="width100" placeholder="Activity Name" name="" value="" style="padding:5px 0;">
+  </section>
+</div>
+<!--#compShopPg4--> 
+<!--Comp Shop Page 4 End--> 
+
+<!--Dashboard Page Start--> 
+<!--Dashboard Shop Page Start-->
+<div id="dashBPg" data-role="page" data-url="dashBPg" tabindex="0" class="ui-page ui-body-c" style="min-height: 571px;">
+  <nav> <a title="Accounts" href="javascript:void(0);" class="ui-link">
+    <p>You appear to be at: <br>
+      Lowe’s Store #2372 ?</p>
+    </a> <a class="floatRt ui-link" href="jquery/index.html#dashBPg2" data-transition="slide" title="Find Store">
+    <p id="findBtn">Check In</p>
+    </a> </nav>
+  <section class="banner"> <img alt="Banner" src="images/sampleImage.png">
+    <div class="bannerMain">
+      <div class="bannerBtnLft"> <img alt="Logo" src="images/iconJw.png"> </div>
+      <div class="bannerBtnRt"> <a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt ui-link"><img src="images/iconSearchGry.png" alt="Search"></a>
+        <div class="bannerBtnRtHt"></div>
+        <a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt ui-link"><img src="images/iconAddtoCont.png" alt="Add"></a> </div>
+    </div>
+  </section>
+  <section class="midNav ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs1">
+    <div class="middListNav">
+      <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist">
+        <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active" role="tab" tabindex="0" aria-controls="tabs-1" aria-labelledby="ui-id-1" aria-selected="true"><a href="jquery/index.html#tabs-1" title="Today" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-1">Today</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-2" aria-labelledby="ui-id-2" aria-selected="false"><a href="jquery/index.html#tabs-2" title="This Week" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-2">This Week</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-3" aria-labelledby="ui-id-3" aria-selected="false"><a href="jquery/index.html#tabs-3" title="Overdue" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-3">Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-1" aria-labelledby="ui-id-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="true" aria-hidden="false">
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-2" aria-labelledby="ui-id-2" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-3" aria-labelledby="ui-id-3" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="jquery/index.html#activitiesPg2" data-transition="slide" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#dashBPg--> 
+
+<!--Dashboard Shop Page 2 Start-->
+<div id="dashBPg2" data-role="page" data-url="dashBPg2">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"> <a class="aBtn" title="Find Store" href="jquery/index.html#dashBPg3" data-transition="slide">Find Store</a> <a class="aBtn" title="Check Out" href="jquery/index.html#dashBPg" data-transition="slide" data-direction="reverse">Check Out</a> </div>
+  </div>
+  <section class="banner"> <img src="images/sampleImage.png" alt="Banner">
+    <div class="bannerMain">
+      <div class="bannerBtnLft"> <img src="images/iconJw.png" alt="Logo"> </div>
+      <div class="bannerBtnRt"> <a class="aBtnContact floatRt" title="Check Out" href="javascript:void(0);"><img alt="Search" src="images/iconSearchGry.png"></a>
+        <div class="bannerBtnRtHt"></div>
+        <a class="aBtnContact floatRt" title="Check Out" href="javascript:void(0);"><img alt="Add" src="images/iconAddtoCont.png"></a> </div>
+    </div>
+  </section>
+  <section class="midNav ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs2">
+    <div class="middListNav" style="background:none;">
+      <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist">
+        <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active" role="tab" tabindex="0" aria-controls="tabs-1" aria-labelledby="ui-id-4" aria-selected="true"><a href="jquery/index.html#tabs-1" title="Today" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-4">Today</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-2" aria-labelledby="ui-id-5" aria-selected="false"><a href="jquery/index.html#tabs-2" title="This Week" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-5">This Week</a></li>
+        <li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-3" aria-labelledby="ui-id-6" aria-selected="false"><a href="jquery/index.html#tabs-3" title="Overdue" class="ui-tabs-anchor ui-link" role="presentation" tabindex="-1" id="ui-id-6">Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-1" aria-labelledby="ui-id-4" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="true" aria-hidden="false">
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-2" aria-labelledby="ui-id-5" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-3" aria-labelledby="ui-id-6" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-expanded="false" aria-hidden="true" style="display: none;">
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity" class="ui-link">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#dashBPg2--> 
+<!--Dashboard Shop Page 2 Start--> 
+
+<!--Dashboard Shop Page 3 Start-->
+<div id="dashBPg3" data-role="page" data-url="dashBPg3">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn">Check Out</a></div>
+  </div>
+  <section class="middle bgLtBlue">
+    <div class="middBox">
+      <h3>Accounts <span><a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt aBtnContactGry">
+      <img src="images/iconSearch.png" alt="Add to Contact"></a> <a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt aBtnContactGry"><img src="images/iconAddtoCont2.png" alt="Add to Contact"></a></span></h3>
+    </div>
+  </section>
+  <section class="midNav bgGray">
+    <div class="storeNo">
+      <p class="floatLft">Lowe’s</p>
+      <div class="customInput floatRt">
+        <div class="styled">
+          <select>
+            <option>Store Number</option>
+            <option>City</option>
+            <option>State</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <ul class="whiteNav">
+      <li><a title="" href="jquery/index.html#fallr-middle">
+        <p>#0000</p>
+        <span> Click Here for Alert Box</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+    </ul>
+  </section>
+</div>
+<!--#dashBPg3--> 
+<!--Dashboard Shop Page 3 Start--> 
+
+<!--Dashboard Shop Page 4 Start
+<div id="dashBPg4" data-role="page">
+<div class="header">
+	<div class="headerLft">Lowe’s Store #2372<span><br/>4 Open Tasks •••</span></div>
+	<div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn">Check Out</a></div>
+</div>
+<section class="middle bgBlue"> 
+  <div class="middBox">
+    <h3>Accounts
+     <span><a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt aBtnContactGry"><img src="images/iconSearch.png" alt="Add to Contact" /></a> <a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt aBtnContactGry"><img src="images/iconAddtoCont2.png" alt="Add to Contact" /></a></span></h3>
+     </div>
+</section>
+<section class="midNav bgGray">
+	<div class="storeNo">	
+     	<p class="floatLft">Lowe’s</p>
+    	<div class="customInput floatRt">
+        	<div class="styled"><select><option>Store Number</option><option>City</option><option>State</option></select></div>
+       </div>
+  	</div>
+  <ul class="whiteNav">
+      <li><a title="" href="#fallr-middle"><p>#0000</p><span> Click Here for Alert Box</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+  </ul>
+</section>
+
+</div><!--#dashBPg4--> 
+<!--Dashboard Shop Page 4 Start--> 
+
+<!--Dashboard Shop Page End--> 
+
+<!--Button Js--> 
+<script src="jquery/jquery-ui.min.js"></script> 
+<script src="jquery/jquery.switchButton.js"></script> 
+
+<!--Sidebar Js--> 
+<script src="jquery/classie.js"></script> 
+<script>
+var menuLeft = document.getElementById( 'cbp-spmenu-s1' ),
+showLeftPush = document.getElementById( 'showLeftPush' ),
+body = document.body;
+
+showLeftPush.onclick = function() {
+classie.toggle( this, 'active' );
+classie.toggle( body, 'cbp-spmenu-push-toright' );
+classie.toggle( menuLeft, 'cbp-spmenu-open' );
+};
+</script> 
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+	//getRecordsCustom();
+	$('#cbp-spmenu-s1 a').click(function(){
+	  document.getElementById('LoginPg').style.display='none';
+	  	  $("#cbp-spmenu-s1").removeClass(); 
+	  	  $("#cbp-spmenu-s1").addClass("cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left"); 
+		  $("body").removeClass(); 
+	  	  $("body").addClass("cbp-spmenu-push bgBlue ui-mobile-viewport ui-overlay-c"); 	});
+		  
+});
+</script>
+
+<div id="fallr-overlay"></div>
+<div class="ui-loader ui-corner-all ui-body-a ui-loader-default ui-loader-fakefix" style="top: 286.5px;">
+<span class="ui-icon ui-icon-loading"></span><h1>loading</h1></div>
+
+<!--DF12 DEMO 14 -- CLICK HANDLER-->
+      <script id="JeldwinItem" type="text/x-jquery-tmpl">
+		<li><a data-transition="slide" href="#" title="">
+        <p>${Name}</p>
+        <span>${Id}</span></a>
+		</li>
+       
+      </script>
+</body>
+</html>
+</html>

@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+<title>Title</title>
+<link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+<link rel="stylesheet" type="text/css" href="css/layout.css">
+<script type="text/javascript">  
+(function(){if(!/*@cc_on!@*/0)return;var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,header,hgroup,mark,menu,meter,nav,output,progress,section,time,video".split(','),i=e.length;while(i--){document.createElement(e[i])}})()</script>
+<!--[if lt IE 9]>
+  <script src="js/html5.js"></script>
+  <![endif]-->
+
+<!--Button Js-->
+<link rel="stylesheet" href="css/jquery.switchButton.css">
+
+<!--Tab JS-->
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script>
+$(function() {
+$( "#tabs1" ).tabs();
+$( "#tabs2" ).tabs();
+$( "#tabs3" ).tabs();
+$( "#tabs4" ).tabs();
+$( "#tabs5" ).tabs();
+$( "#tabs6" ).tabs();
+});
+</script>
+<!--Sidebar Js-->
+<script src="js/modernizr.custom.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
+
+<!--Alert Box-->
+<link rel="stylesheet" type="text/css" media="screen,projection" href="jquery-fallr-1.3.css" />
+<script type="text/javascript" src="js/highlight.pack.js"></script>
+<script type="text/javascript" src="js/jquery-fallr-1.3.pack.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+var methods = {
+middle : function(){
+	console.log('test');
+var clicked = function(){
+    // alert('congrats, you\'ve deleted internet');
+    $.fallr('hide');
+};
+$.fallr('show', {
+    buttons : {
+        button2 : {text: 'Cancel'}, 
+        button1 : {text: 'Yes', danger:true, onclick: clicked}
+    },
+    content : '<p>Are you sure that you want <br/>to check into <br/>Lowe’s Store #0000?</p>',
+    icon    : 'error'
+});
+},
+};
+//button trigger
+$('a[href^="#fallr-"]').click(function(){
+var id = $(this).attr('href').substring(7);
+methods[id].apply(this,[this]);
+return false;
+});
+// code expander
+$('#features pre').slideUp();
+$('a[href="#"]').click(function(){var index = ($(this).parent('p').index()-2)/3;console.log(index);$(this).parent('p').siblings('pre').eq(index).slideToggle();return false;});
+// syntax highlighter
+hljs.tabReplace = '    ';
+hljs.initHighlightingOnLoad();
+});
+//]]>
+</script>
+
+<!--Js Transistion-->
+<script src="js/jquery.mobile-1.3.2.min.js"></script>
+<link href="css/jquery.mobile-1.3.2.min.css" rel="stylesheet">
+
+<!--List Show Hide-->
+<script src="js/listUi.js"></script>
+
+
+<script type="text/javascript" src="js/jquery.popup.js"></script>
+<script type="text/javascript" src="js/jquerymobile.js"></script>
+<script type="text/javascript" src="js/cordova.force.js"></script>
+<script type="text/javascript" src="js/backbone/underscore-1.4.4.min.js"></script>
+<script type="text/javascript" src="js/force.entity.js"></script>
+<script type="text/javascript" src="js/forcetk.mobilesdk.js"></script>
+<script type="text/javascript" src="js/SObjectData.js"></script>
+<script type="text/javascript" src="js/mobileapp.js"></script>
+<script type="text/javascript">
+// OAuth Configuration
+var loginUrl    = 'https://test.salesforce.com/';
+var clientId    = '3MVG9FS3IyroMOh4kg1nN_DWc00R2TY2zEKzdRKmpFBNLoP1YSZYa2eRdtcmdFKb.LqbsPjSr4qfI.4_Ek3qE'; //demo only
+var redirectUri = 'https://www.sakvong.com/jeldwen/index.php?';
+var proxyUrl    = 'https://www.sakvong.com/jeldwen/proxy.php?mode=native';
+// We'll get an instance of the REST API client in a callback after we do 
+// OAuth
+var client = new forcetk.Client(clientId, loginUrl, proxyUrl);
+Force.init(null,null,client,null);
+
+// We use $j rather than $ for jQuery
+if (window.$j === undefined) {
+    $j = $;
+}
+
+$j(document).ready(function() {
+	console.log('DOCUMENT READY '+window.location.href);
+	if(client.sessionId == null) {
+		var oauthResponse = {};
+		if (window.location.hash && window.location.href.indexOf('access_token') > 0) {
+			var message = window.location.hash.substr(1);
+			var nvps = message.split('&');
+			for (var nvp in nvps) {
+			    var parts = nvps[nvp].split('=');
+				oauthResponse[parts[0]] = unescape(parts[1]);
+			}
+			console.log('init app');
+			if(oauthResponse['access_token']) {sessionCallback(oauthResponse);}
+		} else {
+			url = getAuthorizeUrl(loginUrl, clientId, redirectUri);
+			window.location.href = url;
+		}
+	}
+});
+
+function getAuthorizeUrl(loginUrl, clientId, redirectUri){
+    return loginUrl+'services/oauth2/authorize?display=touch'
+        +'&response_type=token&client_id='+escape(clientId)
+        +'&redirect_uri='+escape(redirectUri);
+}
+
+function sessionCallback(oauthResponse) {
+    if (typeof oauthResponse === 'undefined'
+        || typeof oauthResponse['access_token'] === 'undefined') {
+        errorCallback({
+            status: 0, 
+            statusText: 'Unauthorized', 
+            responseText: 'No OAuth response'
+        });
+    } else {
+        client.setSessionToken(oauthResponse.access_token, null, oauthResponse.instance_url);
+
+		addClickListeners();
+		
+		/***********
+		$j.mobile.changePage( "#mainpage" , { reverse: false, changeHash: true } );
+	    $j.mobile.loading( "show", { text: 'Loading', textVisible: true } );
+	    getRecords(function(){
+	        $j.mobile.loading( "hide" );
+			
+		}); ***/
+
+		$j.mobile.changePage( "#dashBPg" , { reverse: false, changeHash: true } );
+
+
+
+
+    }
+}
+  </script>
+
+  
+</head>
+
+<body class="cbp-spmenu-push bgBlue">
+<div class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left" id="cbp-spmenu-s1">
+  <h3>Joe Representative</h3>
+  <a href="#searchR" data-transition="slide" title="Global Search"><img src="images/navIcon1.png" alt="Global Search" /><span>Global Search</span></a> <a href="#contPg" data-transition="slide" title="Contacts"><img src="images/navIcon2.png" alt="Contacts" /><span>Contacts</span></a> <a href="#accntPg" data-transition="slide" title="Accounts"><img src="images/navIcon3.png" alt="Accounts" /><span>Accounts</span></a> <a href="#activitiesPg" data-transition="slide" title="Activities"><img src="images/navIcon4.png" alt="Activities" /><span>Activities</span></a> <a href="#casePg" data-transition="slide" title="Cases"><img src="images/navIcon5.png" alt="Cases" /><span>Cases</span></a> <a href="#compShopPg" data-transition="slide" title="Comp Shop"><img src="images/navIcon6.png" alt="Comp Shop" /><span>Comp Shop</span></a> <a href="#dashBPg" data-transition="slide" title="Dashboard"><img src="images/navIcon7.png" alt="Dashboard" /><span>Dashboard</span></a> <a href="#LogoutPg" data-transition="slide" title="Log Out"><img src="images/navIcon8.png" alt="Log Out" /><span>Log Out</span></a> </div>
+  
+<div class="loadingDiv" id="loadingDiv">
+    <img src="images/loader.GIF" >
+</div>
+
+
+
+<header class="headerNav">
+  <div><a href="javascript:void(0);" id="showLeftPush"><img src="images/navIcon.png" alt="Navigation" /></a></div>
+</header>
+
+<!--Splash Screen Start-->
+<div id="splashLogo" data-role="page">
+  <section class="logo"> <img src="images/logo.png" alt="Logo" /> </section>
+</div>
+
+<!--Splash Screen End--> 
+
+<!--Login Screen Start-->
+<div id="LoginPg" data-role="page" style="display:none;">
+  <section class="loginPage">
+    <h3>SFDC Login</h3>
+    <div class="loginPageForm">
+      <input type="text" value="" placeholder="Username" />
+      <input type="password" value="" placeholder="Password" />
+      <input type="submit" value="Login" name="Login" />
+    </div>
+  </section>
+</div>
+
+<!--Login Screen End--> 
+
+
+<!--Logout Screen Start-->
+<div id="LogoutPg" data-role="page">
+  <section class="loginPage">
+    <h3>SFDC Login</h3>
+    <div class="loginPageForm">
+      <input type="text" value="" placeholder="Username" />
+      <input type="password" value="" placeholder="Password" />
+      <input type="submit" value="Login" name="Login" />
+    </div>
+  </section>
+</div>
+
+<!--Login Screen End--> 
+
+<!--Global Search Page Start-->
+<div id="searchR" data-role="page">
+  <section class="middle bgBlue">
+    <div class="middBox">
+      <div class="search">
+        <input type="text" value="" name="" placeholder="Keyword, Store#, Contact Name" />
+        <a href="javascript:void(0);">Cancel</a> </div>
+    </div>
+  </section>
+  <section class="midNav bgGray" style="display:none;">
+    <div class="storeNo">
+      <p class="floatLft">Accounts Results</p>
+    </div>
+    <ul class="whiteNav">
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+    </ul>
+    <div class="storeNo">
+      <p class="floatLft">Contacts Results</p>
+    </div>
+    <ul class="whiteNav">
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>Search Result</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#searchR--> 
+<!--Global Search Page End--> 
+
+<!--Contact Page Main Start--> 
+
+<!--Contact Page 1 Start-->
+<div id="contPg" data-role="page">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br/>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn">Check Out</a></div>
+  </div>
+  <section class="middle bgBlue">
+    <div class="middBox">
+      <h3>Contacts <span><a href="javascript:void(0);"title="Check Out" class="aBtnContact floatRt aBtnContactGry"><img src="images/iconSearch.png" alt="Add to Contact" /></a> <a id="newbtnContact" data-transition="slide" title="Check Out" class="aBtnContact floatRt aBtnContactGry"><img src="images/iconAddtoCont2.png" alt="Add to Contact" /></a></span></h3>
+    </div>
+  </section>
+  <section class="midNav bgGray">
+    <ul class="whiteNav" id="customContact">
+   <!--   <li class="contList">
+      	<a href="#contPg2" data-transition="slide" class="noBg">
+        <p><b>Last,</b> First</p>
+        <span class="floatRt">Lowe’s Store1234<br/>
+        Some City, State</span></a></li>
+      <li><a href="#contPg2" data-transition="slide" class="noBg" >
+        <p><b>Last,</b> First</p>
+        <span class="floatRt">Lowe’s Store1234<br/>
+        Some City, State</span></a></li>
+      <li><a href="#contPg2" class="noBg">
+        <p><b>Last,</b> First</p>
+        <span class="floatRt">Lowe’s Store1234<br/>
+        Some City, State</span></a></li>
+   --> </ul>
+  </section>
+</div>
+<!--#contPg--> 
+<!--Contact Page 1 End-->
+
+
+<!--Add Contact Page 1 Start-->
+<div id="addContact" data-role="page">
+  
+   <nav>
+   		<a href="#contPg" data-transition="slide" data-direction="reverse" title="Contacts"><img src="images/arrow.png" alt="Contacts" /><p>Add Contact</p></a>    </nav>
+
+  <section class="middle">
+    <div class="middBox">
+      <form name="contact" id="form">
+      <input type="hidden" name="Id" id="Id" />
+      <p class="width100"><input type="text" class="floatRt width100" placeholder="First Name:" id="FirstName" name="FirstName" required/></p>
+      <div class="clearBoth"></div>
+      <p class="width100"><input type="text" class="floatRt width100" placeholder="Last Name:" id="LastName" name="LastName" required/></p>
+      <div class="clearBoth"></div>
+      <p class="width100"><input type="text" class="floatRt width100" placeholder="Email:" id="Email" name="Email" required title="example@example.com" pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}" /></p>
+      <div class="clearBoth"></div>
+      <p><input type="submit" value="Create" id="actionbtnContact"/></p>
+      </form>
+    </div>
+  </section>
+</div>
+<!--#contPg--> 
+<!--Contact Page 1 End-->
+ 
+
+<!--Contact Page 2 Start-->
+<div id="contPg2" data-role="page">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br/>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn">Check Out</a></div>
+  </div>
+  <nav> <a href="#contPg" data-transition="slide" data-direction="reverse" title="Contacts"><img src="images/arrow.png" alt="Contacts" />
+    <p>Contacts</p>
+    </a> </nav>
+  <section class="middle" id="customContactDetails">
+
+  </section>
+  <section class="midNav">
+    <ul>
+      <li><a href="#contPg3" title="Activity" data-transition="slide">Activity</a></li>
+      <li><a href="#contPg4" title="Notes" data-transition="slide">Notes</a></li>
+      <li><a href="#contPg5"  data-transition="slide" title="Lead Referrals">Lead Referrals</a></li>
+    </ul>
+  </section>
+</div>
+<!--#contPg2--> 
+<!--Contact Page 2 End--> 
+
+<!--Contact Page 3 Start-->
+<div id="contPg3" data-role="page" ><!--#contPg3-->
+  <nav> <a href="#contPg2" data-transition="slide" data-direction="reverse" title="David Ellefson"><img src="images/arrow.png" alt="Accounts" />
+    <p>David Ellefson</p>
+    </a> </nav>
+  <section class="middle" >
+    <div class="middBox">
+      <h3>Activities<span><a href="javascript:void(0);" class="aBtnContact floatRt"><img src="images/iconAddtoCont.png" alt="Add to Contact" /></a></span></h3>
+    </div>
+  </section>
+  <section class="midNav" id="tabs3">
+    <div class="middListNav">
+      <ul>
+        <li><a href="#tabs-1" title="Today" >Today</a></li>
+        <li><a href="#tabs-2" title="This Week" >This Week</a></li>
+        <li><a href="#tabs-3" title="Overdue" >Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-1">
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-2">
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-3">
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#contPg3--> 
+<!--Contact Page 3 End--> 
+
+<!--Contact Page 4 Start-->
+<div id="contPg4" data-role="page"><!--#contPg4-->
+  <nav> <a <a href="#contPg2" data-transition="slide" data-direction="reverse" title="David Ellefson"><img src="images/arrow.png" alt="David Ellefson">
+    <p>David Ellefson</p>
+    </a> </nav>
+  <section class="noteBox">
+    <div class="noteBoxMain noteBoxMain2">
+      <h6>Notes: <a class="floatRt" href="javascript:void(0);"><img alt="Edit" src="images/iconEdit.png"></a></h6>
+    </div>
+  </section>
+  <section class="actyDetail">
+    <div class="actyDetailCnt">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</div>
+  </section>
+</div>
+<!--#contPg4--> 
+<!--Contact Page 4 End--> 
+
+<!--Contact Page 5 Start-->
+<div id="contPg5" data-role="page"><!--#contPg5-->
+  <nav> <a href="#contPg2" data-transition="slide" data-direction="reverse" title="David Ellefson"><img src="images/arrow.png" alt="Accounts" />
+    <p>David Ellefson</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Lead Referrals</h3>
+    </div>
+  </section>
+  <section class="leadNav">
+    <ul>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+      <li>
+        <div class="floatLft">
+          <p><span>Lead’s Name</span><br>
+            Lead’s Company<br>
+            Date Created:<br>
+            00/00/0000</p>
+        </div>
+        <div class="floatRt">
+          <p><a href="mailto:lead@leademail.com">lead@leademail.com</a><br>
+            <br>
+            <b>(000)000-0000</b></p>
+        </div>
+      </li>
+    </ul>
+  </section>
+</div>
+<!--#contPg5--> 
+<!--Contact Page 5 End--> 
+
+<!--Contact Page Main End--> 
+
+<!--Accounts Page Main Start--> 
+<!--Accounts Page 1 Start-->
+<div id="accntPg" data-role="page">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a class="aBtn" title="Check Out" href="javascript:void(0);">Check Out</a></div>
+  </div>
+  <section class="middle bgBlue">
+    <div class="middBox">
+      <h3>Accounts <span><a class="aBtnContact floatRt aBtnContactGry" title="Check Out" href="javascript:void(0);"><img alt="Add to Contact" src="images/iconSearch.png"></a> <a class="aBtnContact floatRt aBtnContactGry" title="Check Out" href="javascript:void(0);"><img alt="Add to Contact" src="images/iconAddtoCont2.png"></a></span></h3>
+    </div>
+  </section>
+  <section class="midNav bgGray">
+    <div class="storeNo">
+      <p class="floatLft">Lowe’s</p>
+      <div class="customInput floatRt">
+        <div class="styled">
+          <select>
+            <option>Store Number</option>
+            <option>City</option>
+            <option>State</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <ul class="whiteNav">
+      <li><a data-transition="slide" href="#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a data-transition="slide" href="#accntPg2" title="">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+    </ul>
+  </section>
+</div>
+<!--#accntPg--> 
+<!--Accounts Page 1 End--> 
+
+<!--Accounts Page 2 Start-->
+<div id="accntPg2" data-role="page">
+  <nav> <a title="Accounts" href="#accntPg" data-transition="slide" data-direction="reverse"><img alt="Accounts" src="images/arrow.png">
+    <p>Lowe’s Store #2372</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Accounts<span><a class="aBtnContact floatRt" title="Check Out" href="javascript:void(0);" ><img alt="Add to Contact" src="images/iconAddtoCont.png"></a></span></h3>
+    </div>
+  </section>
+  <section id="tabs4" class="midNav ui-tabs ui-widget ui-widget-content ui-corner-all">
+    <div class="middListNav">
+      <ul>
+        <li><a href="#tabs-4" title="Today" >Today</a></li>
+        <li><a href="#tabs-5" title="This Week" >This Week</a></li>
+        <li><a href="#tabs-6" title="Overdue" >Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-4">
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-5">
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-6">
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--accntPg2--> 
+<!--Accounts Page 2 End--> 
+<!--Accounts Page Main End--> 
+
+<!--Activities Page Main Start--> 
+<!--Activities Page 1 Start-->
+<div id="activitiesPg" data-role="page">
+  <nav> <a title="Accounts" href="javascript:void(0);"><img alt="Accounts" src="images/arrow.png">
+    <p>Lowe’s Store #2372</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Activities<span><a class="aBtnContact floatRt" title="Add" href="#activitiesPgEd1"  data-transition="slide"><img alt="Add to Contact" src="images/iconAddtoCont.png"></a></span></h3>
+    </div>
+  </section>
+  <section id="tabs5" class="midNav ui-tabs ui-widget ui-widget-content ui-corner-all">
+    <div class="middListNav">
+      <ul>
+        <li><a href="#tabs-7" title="Today" >Today</a></li>
+        <li><a href="#tabs-8" title="This Week" >This Week</a></li>
+        <li><a href="#tabs-9" title="Overdue" >Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-7">
+      <li><a title="Activity"  data-transition="slide" href="#activitiesPg2">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Today<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-8">
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup This Week<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-9">
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a title="Activity" href="javascript:void(0);">New Display Setup Overdue<br>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#accntPg--> 
+<!--Activities Page 1 End--> 
+
+<!--Activities Page 2 Start-->
+<div id="activitiesPg2" data-role="page">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a class="aBtn" title="Check Out" href="javascript:void(0);">Check Out</a></div>
+  </div>
+  <nav> <a title="Dashboard" href="#activitiesPg" data-transition="slide" data-direction="reverse"><img alt="Dashboard" src="images/arrow.png">
+    <p>Dashboard</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Activity Name<a class="floatRt" title="Edit" href="javascript:void(0)"><img alt="Edit" src="images/iconEdit.png"></a></h3>
+      <div class="iconAdd"> <img alt="Date" src="images/iconDate.png">
+        <p>MM/DD/YYYY<br>
+          12:00PM</p>
+      </div>
+      <div class="iconAdd"> <img alt="Address" src="images/iconAddress.png">
+        <p>1500 Broadway<br>
+          Saugus, MA 01906</p>
+      </div>
+      <div class="iconCall"> <img alt="Call" src="images/iconCall.png">
+        <p>(781) 417-1027</p>
+      </div>
+      <div class="iconCall"> <img alt="User" src="images/iconUser.png">
+        <p>David Ellefson</p>
+      </div>
+    </div>
+  </section>
+  <section class="actyDetail">
+    <div class="btnOnOff">
+      <p>Include In Trip Report</p>
+      <div id="basic" class="demo floatRt">
+        <input type="checkbox" value="1" checked>
+      </div>
+    </div>
+    <div class="actyDetailCnt">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</div>
+  </section>
+</div>
+<!--accntPg2--> 
+<!--Activities Page 2 End--> 
+
+<!--Activities PageEdit 1 start-->
+<div id="activitiesPgEd1" data-role="page">
+  <nav> <a href="#activitiesPg" data-transition="slide" title="Create Activity">
+    <p>Comp Shop Name</p>
+    </a> <a title="Accounts" href="javascript:void(0);" class="floatRt">
+    <p id="cancelBtn">Cancel</p>
+    </a> </nav>
+  <section class="noteBox">
+    <input type="text" placeholder="Activity Name" name="" value="">
+    <div class="noteBoxList">
+      <ul>
+        <li><a href="javascript:void(0);"><span>MM/DD/YYYY</span><img alt="Icon" src="images/iconList1.png"></a></li>
+        <li><a href="javascript:void(0);"><span>12:00pm ,EST</span><img alt="Icon" src="images/iconList2.png"></a></li>
+        <li><a href="javascript:void(0);"><span>Select Store</span><img alt="Icon" src="images/iconList3.png"></a></li>
+        <li><a href="javascript:void(0);"><span>Activity Type</span><img alt="Icon" src="images/iconList3.png"></a></li>
+        <li><a href="javascript:void(0);"><span>Select Category</span><img alt="Icon" src="images/iconList3.png"></a></li>
+        <li><a href="javascript:void(0);"><span>Issue Type</span><img alt="Icon" src="images/iconList3.png"></a></li>
+      </ul>
+    </div>
+  </section>
+  <section class="noteBox">
+    <div class="noteBoxList">
+      <ul>
+        <li><a href="javascript:void(0);"><span>Select Category</span><img src="images/iconList3.png" alt="Icon" /></a></li>
+        <li><a href="javascript:void(0);"><span>Issue Type</span><img src="images/iconList3.png" alt="Icon" /></a></li>
+        <li>
+          <div class="notBoxheader">
+            <p class="tI">Priority</p>
+            <div class="demo floatRt" id="basic">
+              <input type="checkbox" value="1" checked>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="notBoxheader">
+            <p class="tI">Include in Trip Report</p>
+            <div class="demo floatRt" id="basic">
+              <input type="checkbox" value="1" checked>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="noteBoxMain">
+      <h6>Notes: <a href="javascript:void(0);" class="floatRt"><img src="images/iconEdit.png"  alt="Edit" /></a></h6>
+      <textarea placeholder="Notes, notes, notes..."></textarea>
+      <div class="noteBoxMainFtr"> <a href="javascript:void(0);" class="floatLft"><img src="images/iconDummy.png" alt="Icon" /></a> <a href="javascript:void(0);" class="floatRt"><img src="images/iconCam.png" alt="Icon" /></a> </div>
+    </div>
+    <div class="noteBoxMain">
+      <h6>Next Steps:<a class="floatRt" href="javascript:void(0);"><img alt="Edit" src="images/iconEdit.png"></a></h6>
+      <textarea placeholder="Follow up..."></textarea>
+    </div>
+    <div class="notBoxFooter">
+      <div class="notBoxFooterLft">
+        <p>Send<br/>
+          Email</p>
+        <div class="demo notBoxFooterLftBtn" id="basic">
+          <input type="checkbox" value="1" checked>
+        </div>
+      </div>
+      <div class="notBoxFooterRt"> <a href="javascript:void(0);">Save</a> </div>
+    </div>
+  </section>
+</div>
+<!--#activitiesPgEd1--> 
+<!--Activities PageEdit 1 End--> 
+
+<!--Case Page Main End--> 
+
+<!--Case Page Main Start--> 
+<!--Case Page 1 Start-->
+<div id="casePg" data-role="page">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a class="aBtn" title="Check Out" href="javascript:void(0);">Check Out</a></div>
+  </div>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Cases</h3>
+    </div>
+  </section>
+  <section class="midNav">
+    <ul>
+      <li><a title="Notes" href="#casePg2" data-transition="slide">#0000000000000<br/>
+        <span>Account Name<br/>
+        Owner Name</span></a></li>
+      <li><a title="Notes" href="#casePg2" data-transition="slide">#0000000000000<br/>
+        <span>Account Name<br/>
+        Owner Name</span></a></li>
+      <li><a title="Notes" href="#casePg2" data-transition="slide">#0000000000000<br/>
+        <span>Account Name<br/>
+        Owner Name</span></a></li>
+      <li><a title="Notes" href="#casePg2" data-transition="slide">#0000000000000<br/>
+        <span>Account Name<br/>
+        Owner Name</span></a></li>
+    </ul>
+  </section>
+</div>
+<!--#accntPg--> 
+<!--Accounts Page 1 End--> 
+
+<!--Accounts Page 2 Start-->
+<div id="casePg2" data-role="page">
+  <nav> <a title="Cases" href="#casePg" data-transition="slide" data-direction="reverse"><img alt="Cases" src="images/arrow.png">
+    <p>Cases</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>#000000000</h3>
+      <p class="width100 fontSize18"><b>Account:</b> Lowe's Store</p>
+      <br/>
+      <p class="width100 fontSize18"><b>Contact:</b> Jhon Smith</p>
+      <br/>
+      <p class="width100 fontSize18"><b>Subject:</b> Damaged</p>
+      <br/>
+      <p class="width100 fontSize18"><b>Created:</b> MM/DD/YYYY</p>
+      <br/>
+      <p class="width100 fontSize18"><b>Closed:</b> MM/DD/YYYY</p>
+      <br/>
+      <p class="width100 fontSize18"><b>Status:</b> On Hold</p>
+      <br/>
+      <p class="width100 fontSize18"><b>Priority:</b> Medium</p>
+    </div>
+  </section>
+  <section class="midNav bgBlue">
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing();" id="showNav" >Product Category Name <img class="floatRt" alt="Arrow" src="images/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl">
+      <section class="middle">
+        <div class="middBox">
+          <p class="width100 fontSize18"><b>Warranty Case Owner:</b></p>
+          <br/>
+          <p class="width100 fontSize18"><b>Warranty Source:</b></p>
+          <br/>
+          <p class="width100 fontSize18"><b>Case Owner:</b></p>
+          <br/>
+          <p class="width100 fontSize18"><b>Business Name:</b></p>
+          <br/>
+          <p class="width100 fontSize18"><b>Bulider Name:</b></p>
+          <br/>
+        </div>
+      </section>
+    </div>
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing2();" id="showNav" >Description<img class="floatRt" alt="Arrow" src="images/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl2">
+      <section class="middle">
+        <div class="middBox">
+          <p class="fontSize16" >Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+        </div>
+      </section>
+    </div>
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing3();" id="showNav" >Additional Info<img class="floatRt" alt="Arrow" src="images/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl3">
+      <section class="middle">
+        <div class="middBox">
+          <p class="fontSize16" >Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+        </div>
+      </section>
+    </div>
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing4();" id="showNav" >Warranty Tasks<img class="floatRt" alt="Arrow" src="images/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl4">
+      <section class="middle">
+        <div class="middBox">
+          <p class="fontSize16" >Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+        </div>
+      </section>
+    </div>
+    <div class="middBox">
+      <div class="storeNo">
+        <p class="floatLft colrWht width100"><a onclick="listing5();" id="showNav" >Warranty Products<img class="floatRt" alt="Arrow" src="images/arrowDwn2.png"></a></p>
+      </div>
+    </div>
+    <div class="onclkList" id="listUl5">
+      <section class="middle">
+        <div class="middBox">
+          <p class="fontSize16" >Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+        </div>
+      </section>
+    </div>
+  </section>
+</div>
+<!--casePg2--> 
+<!--Case  Page 2 End--> 
+<!--Case Page Main End--> 
+
+<!--Comp Shop Page Start-->
+<div id="compShopPg" data-role="page">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn">Check Out</a></div>
+  </div>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Comp Shops<span><a class="aBtnContact floatRt" title="Check Out" href="javascript:void(0);"><img alt="Add to Contact" src="images/iconAddtoCont.png"></a></span></h3>
+    </div>
+  </section>
+  <section class="midNav" id="tabs6">
+    <ul>
+      <li><a href="#compShopPg2" data-transition="slide">Comp Shop Name<br/>
+        <span>Comp Shop Description</span>
+        <p class="floatRt">00/00/0000</p>
+        </a></li>
+      <li><a href="#compShopPg2" data-transition="slide" >Comp Shop Name<br/>
+        <span>Comp Shop Description</span>
+        <p class="floatRt">00/00/0000</p>
+        </a></li>
+      <li><a href="#compShopPg2" data-transition="slide" >Comp Shop Name<br/>
+        <span>Comp Shop Description</span>
+        <p class="floatRt">00/00/0000</p>
+        </a></li>
+      <li><a href="#compShopPg2" data-transition="slide" >Comp Shop Name<br/>
+        <span>Comp Shop Description</span>
+        <p class="floatRt">00/00/0000</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#compShopPg--> 
+
+<!--Comp Shop Page 2 Start-->
+<div id="compShopPg2" data-role="page">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a class="aBtn" title="Check Out" href="javascript:void(0);">Check Out</a></div>
+  </div>
+  <nav> <a title="Comp Shops"  href="#compShopPg" data-transition="slide" data-direction="reverse"><img alt="Comp Shops" src="images/arrow.png">
+    <p>Comp Shops</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3>Comp Shop Name</h3>
+      <p>Market/Location</p>
+      <div class="clearBoth"></div>
+      <p>Owner Name</p>
+      <div class="clearBoth"></div>
+      <br/>
+      <p>Completed
+      <div class="demo notBoxFooterLftBtn floatLft noMargin" id="basic">
+        <input type="checkbox" value="1" checked>
+      </div>
+      </p>
+    </div>
+  </section>
+  <section class="midNav">
+    <ul>
+      <li><a title="Retailers / Products" href="#compShopPg3" data-transition="slide">Retailers / Products</a></li>
+    </ul>
+  </section>
+</div>
+<!--#compShopPg2--> 
+<!--Comp Shop Page 2 Start--> 
+
+<!--Comp Shop Page 3 Start-->
+<div id="compShopPg3" data-role="page">
+  <nav> <a href="#compShopPg2" data-transition="slide" data-direction="reverse" title="Comp Shop Name"><img src="images/arrow.png" alt="Comp Shop Name" />
+    <p>Comp Shop Name</p>
+    </a> </nav>
+  <section class="middle">
+    <div class="middBox">
+      <h3><a onclick="listingCS();" id="showNav"  ><img src="images/thehome.png" alt="The Home Depot" /> The Home Depot<img src="images/arrowDwn.png" alt="Arrow" class="floatRt imgMar" /></a></h3>
+    </div>
+    <div class="onclkList" id="listUlCS">
+      <ul>
+        <li><a href="javascript:void(0);"><img src="images/listIcon1.png" alt="Icon">Lowe’s</a></li>
+        <li><a href="javascript:void(0);"><img src="images/listIcon2.png" alt="Icon">Menards</a></li>
+      </ul>
+    </div>
+  </section>
+  <section class="middle">
+    <div class="middBox">
+      <div class="clearBoth"></div>
+      <br/>
+      <p>Section Completed
+      
+      <div class="demo notBoxFooterLftBtn floatLft noMargin" id="basic">
+        <input type="checkbox" value="1" checked>
+      </div>
+      </p>
+    </div>
+  </section>
+  <section class="midNav bgBlue">
+    <div class="storeNo">
+      <p class="floatLft colrWht width100">Product Category Name <img src="images/arrowDwn2.png" alt="Arrow" class="floatRt" /></p>
+    </div>
+    <ul class="whiteNav editList">
+      <li><a title="Edit" href="#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br/>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen" /></span></a></li>
+      <li><a title="Edit" href="#compShopPg4" data-transition="slide">>
+        <p>#0000 Product <br/>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen" /></span></a></li>
+      <li><a title="Edit" href="#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br/>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen" /></span></a></li>
+      <li><a title="Edit" href="#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br/>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen" /></span></a></li>
+      <li><a title="Edit" href="#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br/>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen" /></span></a></li>
+      <li><a title="Edit" href="#compShopPg4" data-transition="slide">
+        <p>#0000 Product <br/>
+          Description</p>
+        <span>$0,000.00</span><span class="floatRt"><img src="images/iconEditPen.png" alt="iconEditPen" /></span></a></li>
+    </ul>
+  </section>
+</div>
+<!--#compShopPg3--> 
+<!--Comp Shop Page 3 Start--> 
+
+<!--Comp Shop Page 4 Start-->
+<div id="compShopPg4" data-role="page">
+  <nav> <a href="#compShopPg3" data-transition="slide" data-direction="reverse" title="Comp Shop Retailer"><img src="images/arrow.png" alt="Comp Shop Name" />
+    <p>Comp Shop Retailer</p>
+    </a> </nav>
+  <section class="midNav bgBlue">
+    <div class="storeNo">
+      <p class="floatLft colrWht width100">Retailer Name</p>
+      <p class="floatLft colrWht width100">Product Description</p>
+    </div>
+  </section>
+  <section class="middle">
+    <div class="middBox">
+      <p class="width100">Price
+        <input type="text" class="floatRt width50" placeholder="$0.000.00" />
+      </p>
+      <div class="clearBoth"></div>
+      <p class="width100">SKU#
+        <input type="text" class="floatRt width50" placeholder="123456789" />
+      </p>
+      <div class="clearBoth"></div>
+      <p>Jamb
+      <div id="basic" class="demo notBoxFooterLftBtn floatLft noMargin">
+        <input type="checkbox" value="1" checked>
+      </div>
+      </p>
+    </div>
+  </section>
+  <section class="middle">
+    <div class="middBox">
+      <p class="width100">Comments</p>
+    </div>
+    <input type="text" class="width100" placeholder="Activity Name" name="" value="" style="padding:5px 0;"/>
+  </section>
+</div>
+<!--#compShopPg4--> 
+<!--Comp Shop Page 4 End--> 
+
+<!--Dashboard Page Start--> 
+<!--Dashboard Shop Page Start-->
+<div id="dashBPg" data-role="page">
+  <nav> <a title="Accounts" href="javascript:void(0);">
+    <p>You appear to be at: <br>
+      Lowe’s Store #2372 ?</p>
+    </a> <a class="floatRt" href="#dashBPg2" data-transition="slide" title="Find Store">
+    <p id="findBtn">Check In</p>
+    </a> </nav>
+  <section class="banner"> <img alt="Banner" src="images/sampleImage.png">
+    <div class="bannerMain">
+      <div class="bannerBtnLft"> <img alt="Logo" src="images/iconJw.png"> </div>
+      <div class="bannerBtnRt"> <a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt"><img src="images/iconSearchGry.png" alt="Search"></a>
+        <div class="bannerBtnRtHt"></div>
+        <a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt"><img src="images/iconAddtoCont.png" alt="Add"></a> </div>
+    </div>
+  </section>
+  <section class="midNav" id="tabs1">
+    <div class="middListNav">
+      <ul>
+        <li><a href="#tabs-1" title="Today" >Today</a></li>
+        <li><a href="#tabs-2" title="This Week" >This Week</a></li>
+        <li><a href="#tabs-3" title="Overdue" >Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-1">
+      <li><a href="#activitiesPg2" data-transition="slide" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="#activitiesPg2" data-transition="slide" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a  href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a  href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-2">
+      <li><a  href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a  href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a  href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a  href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-3">
+      <li><a  href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a  href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a  href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="#activitiesPg2" data-transition="slide"  title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#dashBPg--> 
+
+<!--Dashboard Shop Page 2 Start-->
+<div id="dashBPg2" data-role="page">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"> <a class="aBtn" title="Find Store" href="#dashBPg3" data-transition="slide">Find Store</a> <a class="aBtn" title="Check Out" href="#dashBPg" data-transition="slide" data-direction="reverse" >Check Out</a> </div>
+  </div>
+  <section class="banner"> <img src="images/sampleImage.png" alt="Banner" />
+    <div class="bannerMain">
+      <div class="bannerBtnLft"> <img src="images/iconJw.png" alt="Logo" /> </div>
+      <div class="bannerBtnRt"> <a class="aBtnContact floatRt" title="Check Out" href="javascript:void(0);"><img alt="Search" src="images/iconSearchGry.png"></a>
+        <div class="bannerBtnRtHt"></div>
+        <a class="aBtnContact floatRt" title="Check Out" href="javascript:void(0);"><img alt="Add" src="images/iconAddtoCont.png"></a> </div>
+    </div>
+  </section>
+  <section class="midNav" id="tabs2">
+    <div class="middListNav" style="background:none;">
+      <ul>
+        <li><a href="#tabs-1" title="Today" >Today</a></li>
+        <li><a href="#tabs-2" title="This Week" >This Week</a></li>
+        <li><a href="#tabs-3" title="Overdue" >Overdue</a></li>
+      </ul>
+    </div>
+    <ul id="tabs-1">
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Today<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-2">
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup This Week<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+    <ul id="tabs-3">
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+      <li><a href="javascript:void(0);" title="Activity">New Display Setup Overdue<br/>
+        <span>Lowe’s Store #2372</span>
+        <p class="floatRt">10/20/2013</p>
+        </a></li>
+    </ul>
+  </section>
+</div>
+<!--#dashBPg2--> 
+<!--Dashboard Shop Page 2 Start--> 
+
+<!--Dashboard Shop Page 3 Start-->
+<div id="dashBPg3" data-role="page">
+  <div class="header">
+    <div class="headerLft">Lowe’s Store #2372<span><br/>
+      4 Open Tasks •••</span></div>
+    <div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn">Check Out</a></div>
+  </div>
+  <section class="middle bgLtBlue">
+    <div class="middBox">
+      <h3>Accounts <span><a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt aBtnContactGry"><img src="images/iconSearch.png" alt="Add to Contact" /></a> <a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt aBtnContactGry"><img src="images/iconAddtoCont2.png" alt="Add to Contact" /></a></span></h3>
+    </div>
+  </section>
+  <section class="midNav bgGray">
+    <div class="storeNo">
+      <p class="floatLft">Lowe’s</p>
+      <div class="customInput floatRt">
+        <div class="styled">
+          <select>
+            <option>Store Number</option>
+            <option>City</option>
+            <option>State</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <ul class="whiteNav">
+      <li><a title="" href="#fallr-middle">
+        <p>#0000</p>
+        <span> Click Here for Alert Box</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);">
+        <p>#0000</p>
+        <span>Some City, State</span></a></li>
+    </ul>
+  </section>
+</div>
+<!--#dashBPg3--> 
+<!--Dashboard Shop Page 3 Start--> 
+
+<!--Dashboard Shop Page 4 Start
+<div id="dashBPg4" data-role="page">
+<div class="header">
+	<div class="headerLft">Lowe’s Store #2372<span><br/>4 Open Tasks •••</span></div>
+	<div class="headerRt"><a href="javascript:void(0);" title="Check Out" class="aBtn">Check Out</a></div>
+</div>
+<section class="middle bgBlue"> 
+  <div class="middBox">
+    <h3>Accounts
+     <span><a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt aBtnContactGry"><img src="images/iconSearch.png" alt="Add to Contact" /></a> <a href="javascript:void(0);" title="Check Out" class="aBtnContact floatRt aBtnContactGry"><img src="images/iconAddtoCont2.png" alt="Add to Contact" /></a></span></h3>
+     </div>
+</section>
+<section class="midNav bgGray">
+	<div class="storeNo">	
+     	<p class="floatLft">Lowe’s</p>
+    	<div class="customInput floatRt">
+        	<div class="styled"><select><option>Store Number</option><option>City</option><option>State</option></select></div>
+       </div>
+  	</div>
+  <ul class="whiteNav">
+      <li><a title="" href="#fallr-middle"><p>#0000</p><span> Click Here for Alert Box</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+      <li><a title="" href="javascript:void(0);"><p>#0000</p><span>Some City, State</span></a></li>
+  </ul>
+</section>
+
+</div><!--#dashBPg4--> 
+<!--Dashboard Shop Page 4 Start--> 
+
+<!--Dashboard Shop Page End--> 
+
+<!--Button Js--> 
+<script src="js/jquery-ui.min.js"></script> 
+<script src="js/jquery.switchButton.js"></script> 
+<script> 
+$(function() {
+  $('#basic.demo input').switchButton();
+})
+</script> 
+<!--Sidebar Js--> 
+<script src="js/classie.js"></script> 
+<script>
+var menuLeft = document.getElementById( 'cbp-spmenu-s1' ),
+showLeftPush = document.getElementById( 'showLeftPush' ),
+body = document.body;
+
+showLeftPush.onclick = function() {
+classie.toggle( this, 'active' );
+classie.toggle( body, 'cbp-spmenu-push-toright' );
+classie.toggle( menuLeft, 'cbp-spmenu-open' );
+};
+</script> 
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+	getRecordsCustom();
+	$('#cbp-spmenu-s1 a').click(function(){
+	  document.getElementById('LoginPg').style.display='none';
+	  	  $("#cbp-spmenu-s1").removeClass(); 
+	  	  $("#cbp-spmenu-s1").addClass("cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left"); 
+		  $("body").removeClass(); 
+	  	  $("body").addClass("cbp-spmenu-push bgBlue ui-mobile-viewport ui-overlay-c"); 	});
+		  
+});
+</script>
+</body>
+</html>
