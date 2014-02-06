@@ -1,4 +1,5 @@
-function Jeldwin () {
+function Jeldwin() 
+{
 
 }
 
@@ -36,16 +37,23 @@ Jeldwin.prototype.loadRecordsFromSalesforce = function(soupExists,error) {
 		OfflineQueue.UploadQueue(function(){
 			console.log('We are online... querying SFDC');
             //DF12 DEMO 7 -- QUERY FROM SALESFORCE USING FORCETK
-			forcetkClient.query("SELECT LastName,Id FROM Contact limit 100", function(response){  
+			forcetkClient.query("SELECT LastName,FirstName,Email,MailingCity,MailingState,Title,Account_Name__c,Phone,Id FROM Contact limit 100", function(response){  
                 //GOTO DF12 8
 				console.log(response.records);
+				try{
+					console.log(JSON.parse(response.records));
+					}
+					catch(e){
+						
+						console.log(e.message);
+					}
                 that.registerJeldwinSoup(function(){
                     //GOTO DF12 9
                 	console.log(response.records);
 					OfflineQueue.StoreRecords(response.records,error);
 				},error);
                 //GOTO DF12 10
-				that.populateListview(response.records);
+				//that.populateListview(response.records);
 			}, error); 
 		},onError);
 	}
@@ -131,7 +139,15 @@ Jeldwin.prototype.registerJeldwinSoup = function(callback,error){
 			//Contact soup doesn't exist, so let's register it
 			var indexSpec = [
 		                     {path:"LastName",type:"string"},
+		                     {path:"FirstName",type:"string"},
+		                     {path:"Email",type:"string"},
+		                     {path:"MailingCity",type:"string"},
+		                     {path:"MailingState",type:"string"},
+		                     {path:"Title",type:"string"},
+		                     {path:"Account_Name__c",type:"string"},
+		                     {path:"Phone",type:"string"},
 		                     {path:"Id",type:"string"}
+		                     
 		                     ];
 			navigator.smartstore.registerSoup('JeldwinContacts',indexSpec,function(param){
 				console.log('Soup Created: '+param);
@@ -151,18 +167,26 @@ Jeldwin.prototype.registerJeldwinSoup = function(callback,error){
  **/
 Jeldwin.prototype.populateListview = function(records){
 	console.log('Jeldwin.prototype.populateListview');
-	console.log(records);
+	try{
+	console.log(JSON.parse(records));
+	}
+	catch(e){
+		
+		console.log(e.message);
+	}
     //DF12 DEMO 10 -- POPULATE THE LIST VIEW WITH Jeldwin RECORDS
     //GOTO DF12 6
     var JeldwinList = $( "#contPg" ).find( "#ContactList" );
 	JeldwinList.empty();
 	var curPageEntries = records;
 	$.each(curPageEntries, function(i,entry) {
-        var formattedName = entry.LastName; 
-        var entryId = entry.Id;
+        var formattedName = entry.FirstName + " " + entry.LastName; 
+        var Email = entry.Email;
+        
         
        
-     var newLi = $("<li><a href='#'>" + entryId + " - " + formattedName + "</a></li>");
+     var newLi = $("<li><a href='#contPg2' onclick='getContact(\"" + entry.Id +
+     		"\")' > "  + formattedName + " - " + Email + "</a></li>");
      JeldwinList.append(newLi);
     });
 	//$( "#JeldwinItem" ).tmpl( records ).appendTo( JeldwinList );
@@ -176,6 +200,7 @@ Jeldwin.prototype.populateListview = function(records){
  **/
 Jeldwin.prototype.onSuccessQuerySoup = function(cursor) {
 	console.log('Jeldwin.prototype.onSuccessQuerySoup');
+	
 	var that = this;
 	var records = [];
 

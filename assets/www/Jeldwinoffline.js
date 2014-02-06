@@ -25,6 +25,34 @@ function init() {
 	  });
 }
 
+getContact = function(Id)
+{
+	
+	var conrec = Jeldwin.prototype.loadRecordWithIdFromSmartstore(Id,function(records) 
+			{
+				console.log("The Record is found" + records[0].LastName);
+				var entry = records[0];
+				var JeldwinCon = $( "#contPg2" ).find( "#customContactDetails" );
+				JeldwinCon.empty();
+				var formattedName = entry.FirstName + " " + entry.LastName; 
+		        var email = entry.Email;
+		        var addr = entry.MailingCity != null ? entry.MailingCity : " ";
+		        addr += entry.MailingState != null ? " " + entry.MailingState : " ";
+		        var title = entry.Title != null ? entry.Title : " ";
+		        
+		        var newLi = $("<ul><li><div class='floatLft'><span>" + formattedName + "</span><br>"
+                + entry.Account_Name__c + "<br>"
+                + title + "<br><br>"
+                + "<table border='' >"
+                + "<tr> <td> <a href='#' ><img src='images/iconAddress.png' > </a> </td><td>" + addr + "</td></tr>"
+                + "<tr> <td> <a href='mailto:" + Email + "' ><img src='images/iconMessage.png' > </a> </td><td>" + email + "</td></tr>"
+                + "<tr> <td> <a href='#' ><img src='images/iconCall.png' > </a> </td><td>" + entry.Phone + "</td></tr>"
+		     	+ "</table></div></li></ul>");
+		        JeldwinCon.append(newLi);
+			},onError);
+
+}
+
 function notused(){
   
   
